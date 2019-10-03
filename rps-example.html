@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Rock Paper Scissors Part 1</title>
+</head>
+
+<body>
+
+  <div id="game">
+    <h3>Your input: <span id="user-input"></span></h3>
+    <h3>Computer input: <span id="computer-input"></h3>
+    <h3>Win: <span id="txt-win"></h3>
+    <h3>Lose: <span id="txt-lose"></h3>
+    <h3>Tie: <span id="txt-tie"></h3>
+
+  </div>
+
+  <script type="text/javascript">
+    // Whenever a key is pressed, alert "pressed a button".
+    var txtUserInput = document.getElementById("user-input");
+    var txtcomputerInput = document.getElementById("computer-input");
+    var winOutput = document.getElementById("txt-win");
+    var loseOutput = document.getElementById("txt-lose");
+    var tieOutput = document.getElementById("txt-tie");
+    var validInput = ["R", "P", "S"];
+    var uInput;
+    var comInput;
+    var win = 0;
+    var lose = 0;
+    var tie = 0;
+
+    document.onkeyup = function(event) {
+        uInput = event.key.toUpperCase();
+        txtUserInput.textContent = uInput;
+        comInput = validInput[Math.floor(Math.random() * validInput.length)];
+        txtcomputerInput.textContent = comInput;
+        DecideWinner(uInput, comInput);
+        winOutput.textContent = win;
+        loseOutput.textContent = lose;
+        tieOutput.textContent = tie;
+        // if (input in validInput){
+            
+        // }
+        // else {
+        //   alert("Invalid input!");
+        // }
+    };
+    
+    function DecideWinner(uInput, comInput){
+        if(uInput == comInput){
+          tie++;
+          console.log("tie");
+        }
+        else if(((validInput.indexOf(uInput) + 2) % validInput.length) == validInput.indexOf(comInput)){
+          win++;
+          console.log(validInput.indexOf(uInput));
+          console.log(comInput.indexOf(comInput));
+          console.log("win")
+        }
+        else{
+          lose++;
+          console.log("lose")
+        }
+    }
+
+
+  </script>
+
+</body>
+
+</html>
+
+
+
