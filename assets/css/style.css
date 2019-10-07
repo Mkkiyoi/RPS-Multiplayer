@@ -30,7 +30,7 @@
 
     /* Positioning */
     float: left;
-    clear: right;
+    clear: both;
     
     /* Box Model */
     padding: 0;
@@ -51,5 +51,5 @@
 
     /* Positioning */
     float: left;
-    clear: right;
+    clear: both;
 }
