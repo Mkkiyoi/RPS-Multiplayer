@@ -111,13 +111,15 @@
             $('.modal-body .form-group').append(nameError);
         } else {
             rps_game.playerName = name;
-            document.cookie = 'nameEntered=true';
-            document.cookie = 'playerName=' + name
+            Cookies.set('nameEntered', 'true');
+            Cookies.set('playerName', name);
             $('#name-modal').modal('hide');
         }
     }
     
     $(document).ready(function() {
+        messagesLoaded = false;
+
         $('.img-fluid').on('click', function(event) {
             rps_game.choose(event);
         });
@@ -135,10 +137,10 @@
         
         $('#submit-name').on('click', getName);
         
-        if (document.cookie.replace(/(?:(?:^|.*;\s*)nameEntered\s*\=\s*([^;]*).*$)|^.*$/, "$1") !== "true") {
+        if (Cookies.get('nameEntered') !== 'true') {
             $('#name-modal').modal(options);   
         } else {
-            rps_game.playerName = document.cookie.replace(/(?:(?:^|.*;\s*)playerName\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+            rps_game.playerName = Cookies.get('playerName');
         }
 
     });
