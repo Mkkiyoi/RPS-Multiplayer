@@ -100,7 +100,6 @@
     }
 
     function getName() {
-        event.preventDefault();
         let name = $('#name').val();
         if (name === '') {
             let nameError = $('<div>').addClass('alert alert-danger').attr('role', 'alert');
@@ -118,6 +117,7 @@
         messagesLoaded = false;
 
         $('.img-fluid').on('click', function(event) {
+            event.preventDefault();
             rps_game.choose(event);
         });
 
