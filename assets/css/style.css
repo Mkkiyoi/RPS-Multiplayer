@@ -30,6 +30,7 @@
 
     /* Positioning */
     float: left;
+    clear: right;
     
     /* Box Model */
     padding: 0;
