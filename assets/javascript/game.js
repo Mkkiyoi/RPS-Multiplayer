@@ -18,6 +18,8 @@
     // Get reference point to firebase databse
     let database = firebase.database();
 
+    let messagesLoaded = 'false';
+
     let players = database.ref('lobby');
     let player_1 = database.ref('players/player_1');
     let player_2 = database.ref('players/player_2');
@@ -62,13 +64,10 @@
 
         decideWinner: function() {
             if (rps_game.playerChoice === rps_game.computerChoice) {
-                console.log('tie')
                 $('#tie-score').text(++rps_game.ties);
             } else if(((rps_game.choices.indexOf(rps_game.playerChoice) + 2) % rps_game.choices.length) == rps_game.choices.indexOf(rps_game.computerChoice)) {
-                console.log('win');
                 $('#player-score').text(++rps_game.playerscore);
             } else {
-                console.log('lose')
                 $('#opponent-score').text(++rps_game.opponentscore);
             }
         },
@@ -85,28 +84,36 @@
     };
 
     database.ref().on('child_added', function(snapshot) {
+        if (!messagesLoaded) {
+            displayMessages(snapshot)
+            messagesLoaded = true;
+        }
+    });
+
+    database.ref().orderByChild('dateAdded').limitToLast(1).on('child_added', function(snapshot) {
+        displayMessages(snapshot);
+    });
+
+    function displayMessages(snapshot) {
         let msg = snapshot.val().message;
         let name = $('<p>').text(snapshot.val().name).addClass('msg-name');
         let p = $('<p>').text(msg).addClass('alert alert-secondary').addClass('message');
         $('#messages').append(name);
         $('#messages').append(p);
-    });
+    }
 
     function getName() {
         event.preventDefault();
         let name = $('#name').val();
-        console.log(name);
         if (name === '') {
             let nameError = $('<div>').addClass('alert alert-danger').attr('role', 'alert');
             nameError.text('Please enter a name.');
             $('.modal-body .form-group').append(nameError);
         } else {
-            console.log('Got here')
             rps_game.playerName = name;
             document.cookie = 'nameEntered=true';
             document.cookie = 'playerName=' + name
             $('#name-modal').modal('hide');
-            console.log(document.cookie)
         }
     }
     
