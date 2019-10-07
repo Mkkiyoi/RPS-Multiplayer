@@ -1,0 +1,53 @@
+.jumbotron {
+    /* Visual */
+    padding: 32px;
+}
+
+.img-fluid {
+    /* Visual */
+    width: 100px;
+}
+
+.card-body {
+    /* Visual */
+    height: 150px;
+}
+
+#score div.card-body {
+    /* Visual */
+    height: 65px;
+}
+
+#chat div.card-body {
+    /* Visual */
+    height: 415px;
+    overflow: scroll;
+}
+
+.msg-name {
+    /* Typography */
+    font-size: 10px;
+
+    /* Positioning */
+    float: left;
+    
+    /* Box Model */
+    padding: 0;
+    margin-bottom: 1px;
+}
+
+.message {
+    /* Box Model */
+    margin-bottom: 7px;
+    padding: 5px 7px;
+
+    /* Visual */
+    width: 210px;
+    overflow: visible;
+
+    /* Typography */
+    font-size: 14px;
+
+    /* Positioning */
+    float: left;
+}

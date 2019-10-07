@@ -9,6 +9,9 @@
     <!-- Linking reset.css -->
     <link rel="stylesheet" type="text/css" href="assets/css/reset.css">
 
+    <!-- Linking jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
     <!-- Linking Bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -17,9 +20,6 @@
 
     <!-- Linking Font Awesome -->
     <script src="https://kit.fontawesome.com/ee87894be9.js"></script>
-    
-    <!-- Linking jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     <!-- Linking Stylesheets -->
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
@@ -31,31 +31,126 @@
     <script src="https://www.gstatic.com/firebasejs/7.0.0/firebase-database.js"></script>
 
     <!-- Linking moment.js -->
-    <script src="assets/javascript/moment.js"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
 
     <!-- Linking Javascript -->
     <script src="assets/javascript/game.js"></script>
 </head>
 <body>
-    <div class="container border border-dark">
+    <div class="container bg-secondary rounded mt-3">
         <div class="row">
-            <div class="col-9">
-                <div></div>
-            </div>
-            <div class="col-3">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="alert-secondary">
-
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12"></div>
+            <div class="col-12">
+                <div class="jumbotron bg-secondary text-white m-0">
+                    <h1>RPS Multiplayer</h1>
                 </div>
             </div>
         </div>
     </div>
-    <div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/"             title="Flaticon">www.flaticon.com</a></div>
+    <div class="container border border-secondary p-3 mt-3 rounded">
+
+
+
+
+    <!-- ************************  Modal Goes Here  ******************************** -->
+
+
+
+    <div class="modal" tabindex="-1" role="dialog" id="name-modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">RPS Multiplayer Game</h5>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <input type="name" class="form-control" id="name" placeholder="Enter name">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="submit-name">Enter Name</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- ************************  Modal Ends Here  ******************************** -->
+
+
+
+
+
+
+        <div class="row">
+            <div class="col-8">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header">
+                                Player Choice:
+                            </div>
+                            <div class="card-body" id="player-choice"></div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header">
+                                Opponent Choice:
+                            </div>
+                            <div class="card-body" id="opponent-choice"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-4">
+                        <img class="img-fluid" src="assets/images/rock.png" alt="Rock" data-choice="rock">
+                    </div>
+                    <div class="col-4">
+                        <img class="img-fluid" src="assets/images/paper.png" alt="Paper" data-choice="paper">
+                    </div>
+                    <div class="col-4">
+                        <img class="img-fluid" src="assets/images/scissors.png" alt="Scissors" data-choice="scissors">
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card" id="score">
+                            <div class="card-header">
+                                Score:
+                            </div>
+                            <div class="card-body">
+                                <p class="float-left">Player: <span id="player-score">0</span></p>
+                                <p class="float-left mx-5">Opponent: <span id="opponent-score">0</span></p>
+                                <p class="float-left">Tie: <span id="tie-score">0</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card" id="chat">
+                            <div class="card-header">
+                                Chat
+                            </div>
+                            <div class="card-body">
+                                <div id="messages"></div>
+                            </div>
+                            <form>
+                                <div class="form-group m-0">
+                                    <input type="message" class="form-control" id="message" maxlength="200" placeholder="Enter message">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="fixed-bottom">Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div> -->
 </body>
 </html>
