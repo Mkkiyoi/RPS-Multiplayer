@@ -130,6 +130,8 @@
         
         if (document.cookie.replace(/(?:(?:^|.*;\s*)nameEntered\s*\=\s*([^;]*).*$)|^.*$/, "$1") !== "true") {
             $('#name-modal').modal(options);   
+        } else {
+            rps_game.playerName = document.cookie.replace(/(?:(?:^|.*;\s*)name\s*\=\s*([^;]*).*$)|^.*$/, "$1");
         }
 
     });
