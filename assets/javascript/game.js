@@ -104,7 +104,7 @@
             console.log('Got here')
             rps_game.playerName = name;
             document.cookie = 'nameEntered=true';
-            document.cookie = 'name=' + name
+            document.cookie = 'playerName=' + name
             $('#name-modal').modal('hide');
             console.log(document.cookie)
         }
@@ -131,7 +131,7 @@
         if (document.cookie.replace(/(?:(?:^|.*;\s*)nameEntered\s*\=\s*([^;]*).*$)|^.*$/, "$1") !== "true") {
             $('#name-modal').modal(options);   
         } else {
-            rps_game.playerName = document.cookie.replace(/(?:(?:^|.*;\s*)name\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+            rps_game.playerName = document.cookie.replace(/(?:(?:^|.*;\s*)playerName\s*\=\s*([^;]*).*$)|^.*$/, "$1");
         }
 
     });
