@@ -1,6 +1,8 @@
 (function() {
     'user strict';
 
+    /* ---------------------- Database Functionality ---------------------- */
+
     // Initialize config for firebase database.
     var firebaseConfig = {
         apiKey: "AIzaSyCAFHzlrBOkQfrqbRu5WhIKk6VzsYB7zrg",
@@ -21,6 +23,11 @@
     let lobby = database.ref('lobby');
     let player_1 = database.ref('player_1');
     let player_2 = database.ref('player_2');
+
+
+
+
+    /* ---------------------- Game Functionality ---------------------- */
 
     playerName = '';
     opponentName = '';
@@ -61,6 +68,9 @@
         }
     };
 
+
+    /* ---------------------- Message Functionality ---------------------- */
+
     function sendMessage(event) {
         if (event.keyCode === 13) {
             let msg = $('#message').val();
@@ -87,6 +97,8 @@
         $('#messages').append(p);
     }
 
+    /* ---------------------- Name Functionality ---------------------- */
+    
     function getName() {
         let name = $('#name').val();
         if (name === '') {
