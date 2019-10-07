@@ -50,4 +50,5 @@
 
     /* Positioning */
     float: left;
+    clear: right;
 }
