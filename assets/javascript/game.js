@@ -18,78 +18,66 @@
     // Get reference point to firebase databse
     let database = firebase.database();
 
-    let messagesLoaded = 'false';
+    let lobby = database.ref('lobby');
+    let player_1 = database.ref('player_1');
+    let player_2 = database.ref('player_2');
 
-    let players = database.ref('lobby');
-    let player_1 = database.ref('players/player_1');
-    let player_2 = database.ref('players/player_2');
+    playerName = '';
+    opponentName = '';
+    playerChoice = '';
+    computerChoice = '';
+    choices = ['rock', 'paper', 'scissors'];
+    playerscore = 0;
+    opponentscore = 0;
+    ties = 0;
 
+    function choose(event) {
+        let choice = $(event.target).data('choice');
+        playerChoice = choice;
 
-    let rps_game = {
-        playerName: '',
+        let image = $('<img>').attr('src', 'assets/images/' + choice + '.png');
+        image.addClass('img-fluid mx-auto');
+        $('#player-choice').empty();
+        $('#player-choice').append(image);
+        computerChoose();
+    };
 
-        opponentName: '',
+    function computerChoose() {
+        computerChoice = choices[Math.floor(Math.random() * choices.length)];
+        let image = $('<img>').attr('src', 'assets/images/' + computerChoice + '.png');
+        image.addClass('img-fluid mx-auto');
+        $('#opponent-choice').empty();
+        $('#opponent-choice').append(image);
+        decideWinner();
+    }; 
 
-        playerChoice: '',
-
-        computerChoice: '',
-
-        choices: ['rock', 'paper', 'scissors'],
-
-        playerscore: 0,
-        
-        opponentscore: 0,
-
-        ties: 0,
-
-        choose: function(event) {
-            let choice = $(event.target).data('choice');
-            rps_game.playerChoice = choice;
-
-            let image = $('<img>').attr('src', 'assets/images/' + choice + '.png');
-            image.addClass('img-fluid');
-            $('#player-choice').empty();
-            $('#player-choice').append(image);
-            rps_game.computerChoose();
-        },
-
-        computerChoose: function() {
-            rps_game.computerChoice = rps_game.choices[Math.floor(Math.random() * rps_game.choices.length)];
-            let image = $('<img>').attr('src', 'assets/images/' + rps_game.computerChoice + '.png');
-            image.addClass('img-fluid');
-            $('#opponent-choice').empty();
-            $('#opponent-choice').append(image);
-            rps_game.decideWinner();
-        }, 
-
-        decideWinner: function() {
-            if (rps_game.playerChoice === rps_game.computerChoice) {
-                $('#tie-score').text(++rps_game.ties);
-            } else if(((rps_game.choices.indexOf(rps_game.playerChoice) + 2) % rps_game.choices.length) == rps_game.choices.indexOf(rps_game.computerChoice)) {
-                $('#player-score').text(++rps_game.playerscore);
-            } else {
-                $('#opponent-score').text(++rps_game.opponentscore);
-            }
-        },
-
-        sendMessage: function(event) {
-            if (event.keyCode === 13) {
-                let msg = $('#message').val();
-                database.ref().push({
-                    name: rps_game.playerName,
-                    message: msg
-                });
-            }
+    function decideWinner() {
+        if (playerChoice === computerChoice) {
+            $('#tie-score').text(++ties);
+        } else if(((choices.indexOf(playerChoice) + 2) % choices.length) == choices.indexOf(computerChoice)) {
+            $('#player-score').text(++playerscore);
+        } else {
+            $('#opponent-score').text(++opponentscore);
         }
     };
 
-    database.ref().on('child_added', function(snapshot) {
+    function sendMessage(event) {
+        if (event.keyCode === 13) {
+            let msg = $('#message').val();
+            database.ref('/chat').push({
+                name: playerName,
+                message: msg
+            });
+        }
+    };
+
+    database.ref('/chat').once('child_added', function(snapshot) {
         displayMessages(snapshot);
     });
 
-    // database.ref().orderByChild('dateAdded').limitToLast(1).on('child_added', function(snapshot) {
-    //     displayMessages(snapshot);
-    // });
+    database.ref().orderByChild('dateAdded').limitToLast(1).on('child_added', function(snapshot) {
+        displayMessages(snapshot);
+    });
 
     function displayMessages(snapshot) {
         let msg = snapshot.val().message;
@@ -106,7 +94,7 @@
             nameError.text('Please enter a name.');
             $('.modal-body .form-group').append(nameError);
         } else {
-            rps_game.playerName = name;
+            playerName = name;
             Cookies.set('nameEntered', 'true');
             Cookies.set('playerName', name);
             $('#name-modal').modal('hide');
@@ -118,11 +106,11 @@
 
         $('.img-fluid').on('click', function(event) {
             event.preventDefault();
-            rps_game.choose(event);
+            choose(event);
         });
 
         $('#message').on('keypress', function(event) {
-            rps_game.sendMessage(event);
+            sendMessage(event);
         });
 
         // Show modal
@@ -137,7 +125,7 @@
         if (Cookies.get('nameEntered') !== 'true') {
             $('#name-modal').modal(options);   
         } else {
-            rps_game.playerName = Cookies.get('playerName');
+            playerName = Cookies.get('playerName');
         }
 
     });
