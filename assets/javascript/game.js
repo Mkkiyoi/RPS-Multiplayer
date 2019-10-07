@@ -84,15 +84,12 @@
     };
 
     database.ref().on('child_added', function(snapshot) {
-        if (!messagesLoaded) {
-            displayMessages(snapshot)
-            messagesLoaded = true;
-        }
-    });
-
-    database.ref().orderByChild('dateAdded').limitToLast(1).on('child_added', function(snapshot) {
         displayMessages(snapshot);
     });
+
+    // database.ref().orderByChild('dateAdded').limitToLast(1).on('child_added', function(snapshot) {
+    //     displayMessages(snapshot);
+    // });
 
     function displayMessages(snapshot) {
         let msg = snapshot.val().message;
