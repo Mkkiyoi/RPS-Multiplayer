@@ -27,8 +27,15 @@
     <!-- Linking Firebase Core -->
     <script src="https://www.gstatic.com/firebasejs/7.0.0/firebase-app.js"></script>
 
-    <!-- Linking Firevase Database -->
+    <!-- Linking Firebase Database -->
     <script src="https://www.gstatic.com/firebasejs/7.0.0/firebase-database.js"></script>
+
+    <!-- Linking Firebase Authentication -->
+    <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-auth.js"></script>
+
+    <!-- Linking Firebase Authentication UI -->
+    <script src="https://cdn.firebase.com/libs/firebaseui/4.2.0/firebaseui.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/4.2.0/firebaseui.css" />
 
     <!-- Linking moment.js -->
     <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
@@ -58,25 +65,65 @@
 
 
 
-    <div class="modal" tabindex="-1" role="dialog" id="name-modal">
+    <div class="modal" tabindex="-1" role="dialog" id="user-modal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">RPS Multiplayer Game</h5>
                 </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <input type="name" class="form-control" id="name" placeholder="Enter name">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="sign-in-tab" data-toggle="tab" href="#sign-in-form" role="tab" aria-controls="sign-in" aria-selected="true">Sign In</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="create-account-tab" data-toggle="tab" href="#create-account-form" role="tab" aria-controls="profile" aria-selected="false">Create Account</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="sign-in-form" role="tabpanel" aria-labelledby="sign-in-tab">
+                        <div class="modal-body">
+                            <form>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" id="sign-in-email" placeholder="Enter email">
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" id="sign-in-password" placeholder="Enter password">
+                                </div>
+                            </form>
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" id="submit-name">Enter Name</button>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" id="sign-in">Sign In</button>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="create-account-form" role="tabpanel" aria-labelledby="sign-in-tab">
+                        <div class="modal-body">
+                            <form>
+                                <div class="form-group">
+                                    <label for="name">Name</label>
+                                    <input type="name" class="form-control" id="name" placeholder="Enter name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" id="email" placeholder="Enter email">
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" id="password" placeholder="Enter password">
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" id="create-account">Create Account</button>
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
         </div>
     </div>
+    
 
 
 
@@ -130,6 +177,11 @@
                                 <p class="float-left">Tie: <span id="tie-score">0</span></p>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 float-left">
+                        <button class="btn btn-primary mt-3" id="sign-out">Sign Out</button>
                     </div>
                 </div>
             </div>

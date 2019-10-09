@@ -20,12 +20,74 @@
     // Get reference point to firebase databse
     let database = firebase.database();
 
-    let lobby = database.ref('lobby');
-    let player_1 = database.ref('player_1');
-    let player_2 = database.ref('player_2');
+
+    /* ---------------------- User/Account Functionality ---------------------- */
+
+    function createAccount() {
+        let playerName = $('#name').val().trim();
+        let email = $('#email').val().trim();
+        let password = $('#password').val().trim();
+
+        // Make sure form inputs are not empty.
+        if (playerName === '') {
+            let nameError = $('<div>').addClass('alert alert-danger').attr('role', 'alert');
+            nameError.text('Please enter a name.');
+            $('.modal-body .form-group').append(nameError);
+        } else if (email === '' || !email.includes('\@')) {
+            let emailError = $('<div>').addClass('alert alert-danger').attr('role', 'alert');
+            emailError.text('Please enter a email.');
+            $('.modal-body .form-group').append(emailError);
+        } else if (password === '') {
+            let passwordError = $('<div>').addClass('alert alert-danger').attr('role', 'alert');
+            passwordError.text('Please enter a password.');
+            $('.modal-body .form-group').append(passwordError);
+        } else {
+
+            firebase.auth().createUserWithEmailAndPassword(email, password)
+                .then(function(user) {
+                    user.user.updateProfile({displayName: playerName});
+            });
+            $('#user-modal').modal('hide');
+        }
+
+        $('#name').text('');
+        $('#email').text('');
+        $('#password').text('');
 
 
+    }
 
+    function signIn() {
+        let email = $('#sign-in-email').val().trim();
+        let password = $('#sign-in-password').val().trim();
+        console.log(email)
+        firebase.auth().signInWithEmailAndPassword(email,password).then(function() {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    $('#user-modal').modal('hide');
+                } else {
+                    let loginError = $('<div>').addClass('alert alert-danger').attr('role', 'alert');
+                    loginError.text('Your email or password was incorrect.');
+                    $('.modal-body .form-group').prepend(loginError);
+                    $('#email').val('');
+                    $('#password').val('');
+                }
+            });
+        });
+        
+    }
+
+    function signOut() {
+        firebase.auth().signOut().then(function() {
+            location.reload();
+        }).catch(function(error) {
+            console.log(error.message)
+        });
+    }
+
+    function removeAlert() {
+        $('.modal-body .form-group .alert').remove();
+    }
 
     /* ---------------------- Game Functionality ---------------------- */
 
@@ -98,20 +160,7 @@
     }
 
     /* ---------------------- Name Functionality ---------------------- */
-    
-    function getName() {
-        let name = $('#name').val();
-        if (name === '') {
-            let nameError = $('<div>').addClass('alert alert-danger').attr('role', 'alert');
-            nameError.text('Please enter a name.');
-            $('.modal-body .form-group').append(nameError);
-        } else {
-            playerName = name;
-            Cookies.set('nameEntered', 'true');
-            Cookies.set('playerName', name);
-            $('#name-modal').modal('hide');
-        }
-    }
+
     
     $(document).ready(function() {
         messagesLoaded = false;
@@ -131,14 +180,16 @@
             'show': true,
             'focus': true
         }
-        
-        $('#submit-name').on('click', getName);
-        
-        if (Cookies.get('nameEntered') !== 'true') {
-            $('#name-modal').modal(options);   
-        } else {
-            playerName = Cookies.get('playerName');
-        }
 
+        $('#sign-in').on('click', signIn);
+        
+        $('#create-account').on('click', createAccount);
+        
+        $('#user-modal').modal(options);   
+
+        $("#sign-out").on('click', signOut);
+
+        $('#sign-in-tab').on('click', removeAlert);
+        $('#create-account-tab').on('click', removeAlert);
     });
 })();
