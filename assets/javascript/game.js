@@ -48,6 +48,7 @@
                     user.user.updateProfile({displayName: playerName});
             });
             $('#user-modal').modal('hide');
+           
         }
 
         $('#name').text('');
@@ -134,20 +135,17 @@
     /* ---------------------- Message Functionality ---------------------- */
 
     function sendMessage(event) {
-        if (event.keyCode === 13) {
-            let msg = $('#message').val();
-            database.ref('/chat').push({
-                name: playerName,
-                message: msg
-            });
-        }
+        event.preventDefault();
+        let msg = $('#message-box');
+        console.log(playerName)
+        database.ref('/chat').push({
+            name: playerName,
+            message: msg.val()
+        });
+        msg.val('');
     };
 
-    database.ref('/chat').once('child_added', function(snapshot) {
-        displayMessages(snapshot);
-    });
-
-    database.ref().orderByChild('dateAdded').limitToLast(1).on('child_added', function(snapshot) {
+    database.ref('/chat').on('child_added', function(snapshot) {
         displayMessages(snapshot);
     });
 
@@ -170,7 +168,8 @@
             choose(event);
         });
 
-        $('#message').on('keypress', function(event) {
+        $('#message').on('click', function(event) {
+            event.preventDefault();
             sendMessage(event);
         });
 
@@ -185,7 +184,15 @@
         
         $('#create-account').on('click', createAccount);
         
-        $('#user-modal').modal(options);   
+        firebase.auth().onAuthStateChanged(function(user){
+            
+            if (!user) {
+                $('#user-modal').modal(options);
+            } else {
+                playerName = user.displayName;
+            }
+        });
+          
 
         $("#sign-out").on('click', signOut);
 
