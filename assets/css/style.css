@@ -62,3 +62,13 @@
     float: left;
     display: none;
 }
+
+#create-game {
+    font-size: 15px;
+    display: block;
+}
+
+#lobby-card .card-body {
+    padding: 10px;
+    height: 400px;
+}

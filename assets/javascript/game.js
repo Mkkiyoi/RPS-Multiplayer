@@ -92,44 +92,149 @@
 
     /* ---------------------- Game Functionality ---------------------- */
 
-    playerName = '';
-    opponentName = '';
-    playerChoice = '';
-    computerChoice = '';
-    choices = ['rock', 'paper', 'scissors'];
-    playerscore = 0;
-    opponentscore = 0;
-    ties = 0;
+    let playerName = '';
+    let opponentName = '';
+    let choices = ['rock', 'paper', 'scissors'];
+    let playerscore = 0;
+    let opponentscore = 0;
+    let ties = 0;
+    let STATE = {
+        OPEN: 1,
+        JOINED: 2,
+        COMPLETED: 3,
+        PLAYER_1_TURN: 4,
+        PLAYER_2_TURN: 5
+    }
+    let currentOnGoingGame;
+    
 
-    function choose(event) {
+    function choose(event, gameRef, game) {
         let choice = $(event.target).data('choice');
-        playerChoice = choice;
 
         let image = $('<img>').attr('src', 'assets/images/' + choice + '.png');
         image.addClass('img-fluid mx-auto');
         $('#player-choice').empty();
         $('#player-choice').append(image);
-        computerChoose();
-    };
-
-    function computerChoose() {
-        computerChoice = choices[Math.floor(Math.random() * choices.length)];
-        let image = $('<img>').attr('src', 'assets/images/' + computerChoice + '.png');
-        image.addClass('img-fluid mx-auto');
-        $('#opponent-choice').empty();
-        $('#opponent-choice').append(image);
-        decideWinner();
-    }; 
-
-    function decideWinner() {
-        if (playerChoice === computerChoice) {
-            $('#tie-score').text(++ties);
-        } else if(((choices.indexOf(playerChoice) + 2) % choices.length) == choices.indexOf(computerChoice)) {
-            $('#player-score').text(++playerscore);
+        if (game.state === STATE.PLAYER_1_TURN) {
+            gameRef.update({state: STATE.PLAYER_2_TURN});
+            gameRef.creator.update({choice: choice});
         } else {
-            $('#opponent-score').text(++opponentscore);
+            gameRef.update({state: STATE.COMPLETED});
+            gameRef.joiner.update({choice: choice});
         }
     };
+
+    function decideWinner(gameRef, game) {
+        let creatorChoice = game.creator.choice;
+        let joinerChoice = game.joiner.choice;
+        if (creatorChoice === joinerChoice) {
+            $('#tie-score').text(++ties);
+        } else if(((choices.indexOf(creatorChoice) + 2) % choices.length) == choices.indexOf(joinerChoice)) {
+            if (game.creator.uid === firebase.auth().currentUser.uid) {
+                $('#player-score').text(++playerscore);
+            } else {
+                $('#opponent-score').text(++opponentscore);
+            }
+        } else {
+            if (game.joiner.uid === firebase.auth().currentUser.uid) {
+                $('#player-score').text(++playerscore);
+            } else {
+                $('#opponent-score').text(++opponentscore);
+            }
+        }
+        gameRef.update({state: STATE.PLAYER_1_TURN});
+    };
+
+
+    function createGame() {
+        let user = firebase.auth().currentUser;
+        let currentGame = {
+            creator: {
+                uid: user.uid,
+                name: user.displayName
+            },
+            state: STATE.OPEN
+        }
+        database.ref('/games').push(currentGame);
+    }
+
+    function joinGame(key) {
+        let user = firebase.auth().currentUser; 
+        let gameRef = database.ref('/games').child(key);
+        gameRef.transaction(function(game) {
+            if (!game.joiner) {
+                game.state = STATE.JOINED
+                game.joiner = {
+                    uid: user.uid,
+                    name: user.displayName
+                }
+            } else {
+                alert('Game is already full');
+            }
+            watchGame(key)
+            return game;
+        });
+    }
+
+    let openGames = database.ref('/games').orderByChild('state').equalTo(STATE.OPEN);
+    
+    openGames.on('child_added', function(snapshot) {
+        let snapVal = snapshot.val();
+        if (snapVal.creator.uid != firebase.auth().currentUser.uid) {
+            let btn = $('<button>').text('Join ' + snapVal.creator.name + "'s Game").attr('id', snapshot.key).addClass('btn btn-primary').on('click', function() {
+                currentOnGoingGame = joinGame(snapshot.key);
+            });
+            $('#lobby').append(btn);
+        }
+    });
+
+    openGames.on('child_removed', function(snapshot) {
+        let btn = $('#' + snapshot.key);
+        if (btn) {
+            btn.remove();
+        }
+    });
+
+    function watchGame(key) {
+        let gameRef = database.ref('/games').child(key);
+        gameRef.on('value', function(snapshot) {
+            let game = snapshot.val();
+            switch (game.state) {
+                case STATE.JOINED: joinedGame(gameRef, game); break;
+                case STATE.PLAYER_1_TURN: takeTurn(gameRef, game); break;
+                case STATE.PLAYER_2_TURN: takeTurn(gameRef, game); break;
+                case STATE.COMPLETED: decideWinner(gameRef, game); break;
+            }
+        });
+    }
+
+    function joinedGame(gameRef, game) {
+        gameRef.update({state: STATE.PLAYER_1_TURN};
+    }
+
+    function takeTurn(gameRef, game) {
+        if (game.state === STATE.PLAYER_1_TURN) {
+            if (game.creator.uid === firebase.auth().currentUser.uid) {
+                $('#player-choice').text('Choose rock, paper, or scissors by clicking on the appropriate picture.');
+                $('.img-fluid').on('click', function(event) {
+                    event.preventDefault();
+                    choose(event, gameRef, game);
+                });
+            } else {
+                $('#opponent-choice').text('Waiting for opponent to choose...');
+            }
+        } else {
+            if (game.joiner.uid === firebase.auth().currentUser.uid) {
+                $('#player-choice').text('Choose rock, paper, or scissors by clicking on the appropriate picture.');
+                $('.img-fluid').on('click', function(event) {
+                    event.preventDefault();
+                    choose(event, gameRef, game);
+                });
+            } else {
+                $('#opponent-choice').text('Waiting for opponent to choose...');
+            }
+        }
+    }
 
 
     /* ---------------------- Message Functionality ---------------------- */
@@ -161,29 +266,32 @@
 
     
     $(document).ready(function() {
-        messagesLoaded = false;
 
-        $('.img-fluid').on('click', function(event) {
-            event.preventDefault();
-            choose(event);
-        });
+        
 
         $('#message').on('click', function(event) {
             event.preventDefault();
             sendMessage(event);
         });
 
-        // Show modal
+
+        $('#sign-in').on('click', signIn);
+        
+        $('#create-account').on('click', createAccount);
+        
+        $("#sign-out").on('click', signOut);
+
+        $('#sign-in-tab').on('click', removeAlert);
+
+        $('#create-account-tab').on('click', removeAlert);
+
+        // Prevent modal from being closed by clicking on background
         let options = {
             'backdrop' : 'static',
             'show': true,
             'focus': true
         }
 
-        $('#sign-in').on('click', signIn);
-        
-        $('#create-account').on('click', createAccount);
-        
         firebase.auth().onAuthStateChanged(function(user){
             
             if (!user) {
@@ -192,11 +300,7 @@
                 playerName = user.displayName;
             }
         });
-          
 
-        $("#sign-out").on('click', signOut);
-
-        $('#sign-in-tab').on('click', removeAlert);
-        $('#create-account-tab').on('click', removeAlert);
+        $('#create-game').on('click', createGame);
     });
 })();
