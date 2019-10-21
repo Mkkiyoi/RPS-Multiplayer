@@ -16,45 +16,6 @@ let STATE = {
     PLAYER_2_TURN: 5
 }    
 
-function choose(event, gameRef, game) {
-    let choice = $(event.target).data('choice');
-    let image = $('<img>').attr('src', 'assets/images/' + choice + '.png');
-    image.addClass('img-fluid mx-auto');
-    $('#player-choice').empty();
-    $('#player-choice').append(image);
-    if (game.state === STATE.PLAYER_1_TURN) {
-        gameRef.update({state: STATE.PLAYER_2_TURN});
-        gameRef.child('creator').update({choice: choice});
-    } else {
-        gameRef.update({state: STATE.COMPLETED});
-        gameRef.child('joiner').update({choice: choice});
-    }
-};
-
-function decideWinner(key, gameRef, game) {
-    let creatorChoice = game.creator.choice;
-    let joinerChoice = game.joiner.choice;
-    if (creatorChoice === joinerChoice) {
-        $('#tie-score').text(++ties);
-    } else if(((choices.indexOf(creatorChoice) + 2) % choices.length) == choices.indexOf(joinerChoice)) {
-        if (game.creator.uid === firebase.auth().currentUser.uid) {
-            $('#player-score').text(++playerscore);
-        } else {
-            $('#opponent-score').text(++opponentscore);
-        }
-    } else {
-        if (game.joiner.uid === firebase.auth().currentUser.uid) {
-            $('#player-score').text(++playerscore);
-        } else {
-            $('#opponent-score').text(++opponentscore);
-        }
-    }
-    $('#player-choice').empty()
-    $('#opponent-choice').empty()
-    gameRef.update({state: STATE.PLAYER_1_TURN});
-};
-
-
 function createGame() {
     let user = firebase.auth().currentUser;
     let currentGame = {
@@ -62,8 +23,10 @@ function createGame() {
             uid: user.uid,
             name: user.displayName
         },
-        state: STATE.OPEN
+        state: STATE.OPEN,
+        score_updated: false
     }
+    $('#player-choice').text('Waiting for player to join...');
     database.ref('/games/').push(currentGame);
 }
 
@@ -148,3 +111,42 @@ function takeTurn(key, gameRef, game) {
         }
     }
 }
+
+function choose(event, gameRef, game) {
+    let choice = $(event.target).data('choice');
+    let image = $('<img>').attr('src', 'assets/images/' + choice + '.png');
+    image.addClass('img-fluid mx-auto');
+    $('#player-choice').empty();
+    $('#player-choice').append(image);
+    if (game.state === STATE.PLAYER_1_TURN) {
+        gameRef.update({state: STATE.PLAYER_2_TURN});
+        gameRef.child('creator').update({choice: choice});
+    } else {
+        gameRef.update({state: STATE.COMPLETED});
+        gameRef.child('joiner').update({choice: choice});
+    }
+};
+
+function decideWinner(key, gameRef, game) {
+    let creatorChoice = game.creator.choice;
+    let joinerChoice = game.joiner.choice;
+    if (creatorChoice === joinerChoice && !game.score_updated) {
+        $('#tie-score').text(++ties);
+    } else if(((choices.indexOf(creatorChoice) + 2) % choices.length) == choices.indexOf(joinerChoice)) {
+        if (game.creator.uid === firebase.auth().currentUser.uid) {
+            $('#player-score').text(++playerscore);
+        } else {
+            $('#opponent-score').text(++opponentscore);
+        }
+    } else {
+        if (game.joiner.uid === firebase.auth().currentUser.uid) {
+            $('#player-score').text(++playerscore);
+        } else {
+            $('#opponent-score').text(++opponentscore);
+        }
+    }
+    $('#player-choice').empty()
+    $('#opponent-choice').empty()
+    
+    gameRef.update({state: STATE.PLAYER_1_TURN});
+};
