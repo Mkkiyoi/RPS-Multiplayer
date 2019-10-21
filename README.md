@@ -3,7 +3,7 @@
 RPS Multiplayer is an online multiplayer rock, paper, scissors game website.
 
 ### Live Version of the Site
-* [RPS Multiplayer](mkkiyoi.github.io/RPS-Multiplayer)
+* [RPS Multiplayer](https://mkkiyoi.github.io/RPS-Multiplayer)
 
 ### How does the game work?
 
