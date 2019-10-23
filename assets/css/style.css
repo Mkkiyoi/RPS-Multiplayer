@@ -72,3 +72,7 @@
     padding: 10px;
     height: 400px;
 }
+
+.text-muted {
+    font-size: 12px;
+}
